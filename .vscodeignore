@@ -1,4 +1,7 @@
 .vscode/**
+.codex/**
+.git/**
+.envrc
 .gitignore
 src/**
 test/**
