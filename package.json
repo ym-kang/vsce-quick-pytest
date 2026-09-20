@@ -1,0 +1,72 @@
+{
+  "name": "pytest-quick-run",
+  "displayName": "Pytest Quick Run",
+  "description": "Run a pytest function directly without repository-wide test discovery.",
+  "version": "0.0.1",
+  "publisher": "local",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Testing",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "pytest",
+    "python",
+    "testing",
+    "quick run"
+  ],
+  "activationEvents": [
+    "onLanguage:python",
+    "onCommand:pytestQuickRun.runAtCursor"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "pytestQuickRun.runAtCursor",
+        "title": "Pytest Quick Run: Run Test at Cursor"
+      },
+      {
+        "command": "pytestQuickRun.debugAtCursor",
+        "title": "Pytest Quick Run: Debug Test at Cursor"
+      }
+    ],
+    "configuration": {
+      "title": "Pytest Quick Run",
+      "properties": {
+        "pytestQuickRun.pythonPath": {
+          "type": "string",
+          "default": "",
+          "description": "Python executable used to invoke pytest. Leave empty to use Python's configured interpreter or python3."
+        },
+        "pytestQuickRun.pytestArgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["-s"],
+          "description": "Additional arguments inserted before the pytest target. -s is enabled by default so print() output is shown immediately."
+        },
+        "pytestQuickRun.cwd": {
+          "type": "string",
+          "default": "",
+          "description": "Working directory for pytest. Leave empty to use the workspace root."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "npm run compile && node --test test/*.test.js",
+    "package": "npm run compile"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}

@@ -1,2 +1,4 @@
 .codex
 .envrc
+node_modules
+out
