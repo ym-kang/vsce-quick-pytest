@@ -1,5 +1,9 @@
 # Pytest Quick Run
 
+Fast, discovery-free pytest execution for large Python repositories.
+
+[GitHub repository](https://github.com/ym-kang/vsce-quick-pytest) · [Report an issue](https://github.com/ym-kang/vsce-quick-pytest/issues)
+
 Pytest Quick Run adds `▶ Run ...` and `🐞 Debug ...` CodeLens buttons above pytest functions. They run only that pytest node directly:
 
 ```text
@@ -20,6 +24,20 @@ The settings below provide the default values shown in those dialogs. You can ch
 
 After a run, the entered values are saved as the most recent configuration for the current workspace and restored the next time a test is launched.
 
+## Screenshots
+
+### Run and debug actions
+
+CodeLens buttons appear above `test_*` functions in the editor.
+
+![Run and debug actions](<images/Screenshot 2026-09-20 at 22.13.19.png>)
+
+### Run configuration
+
+Configure pytest arguments and environment variables in the centered editor panel before each run.
+
+![Run configuration panel](<images/Screenshot 2026-09-20 at 22.13.28.png>)
+
 ## Supported declarations
 
 - Any Python file, regardless of its filename or directory
@@ -33,7 +51,34 @@ After a run, the entered values are saved as the most recent configuration for t
 - `pytestQuickRun.environmentVariables`: environment variables passed to both run and debug, for example `{ "APP_ENV": "test", "DJANGO_SETTINGS_MODULE": "config.settings" }`.
 - `pytestQuickRun.cwd`: pytest working directory. Empty uses the workspace root.
 
-The command palette also provides **Pytest Quick Run: Run Test at Cursor**.
+The command palette also provides **Pytest Quick Run: Run Test at Cursor** and **Pytest Quick Run: Debug Test at Cursor**.
+
+## Install from VSIX
+
+Build the extension package locally:
+
+```bash
+npm install
+npm run package:vsix
+```
+
+Then install `pytest-quick-run-0.0.1.vsix` from the VS Code Extensions view using **Install from VSIX...**, or run:
+
+```bash
+code --install-extension pytest-quick-run-0.0.1.vsix
+```
+
+## Publish to the Marketplace
+
+Before publishing, replace the `publisher` value in `package.json` with your actual Visual Studio Marketplace Publisher ID and authenticate `vsce` with a Personal Access Token.
+
+```bash
+npm test
+npm run package:vsix
+vsce publish
+```
+
+The extension metadata points to the [GitHub repository](https://github.com/ym-kang/vsce-quick-pytest).
 
 ## Development
 
