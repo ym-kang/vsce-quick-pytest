@@ -3,7 +3,7 @@
   "displayName": "Pytest Quick Run",
   "description": "Run a pytest function directly without repository-wide test discovery.",
   "version": "0.0.1",
-  "publisher": "local",
+  "publisher": "YoungmukKang",
   "icon": "icon.png",
   "license": "MIT",
   "repository": {

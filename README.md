@@ -70,7 +70,7 @@ code --install-extension pytest-quick-run-0.0.1.vsix
 
 ## Publish to the Marketplace
 
-Before publishing, replace the `publisher` value in `package.json` with your actual Visual Studio Marketplace Publisher ID and authenticate `vsce` with a Personal Access Token.
+The extension is configured for the `YoungmukKang` Visual Studio Marketplace Publisher. Authenticate `vsce` with a Personal Access Token before publishing.
 
 ```bash
 npm test
