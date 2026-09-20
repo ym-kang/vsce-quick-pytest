@@ -4,6 +4,7 @@
   "description": "Run a pytest function directly without repository-wide test discovery.",
   "version": "0.0.1",
   "publisher": "local",
+  "icon": "icon.png",
   "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
@@ -48,7 +49,15 @@
             "type": "string"
           },
           "default": ["-s"],
-          "description": "Additional arguments inserted before the pytest target. -s is enabled by default so print() output is shown immediately."
+          "description": "Default additional pytest arguments shown in the run dialog. -s is enabled by default so print() output is shown immediately."
+        },
+        "pytestQuickRun.environmentVariables": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Default environment variables shown in the run dialog and passed to pytest runs and debug sessions."
         },
         "pytestQuickRun.cwd": {
           "type": "string",

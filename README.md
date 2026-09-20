@@ -11,6 +11,15 @@ It does not call VS Code's test discovery API and does not scan the repository b
 
 `-s` is enabled by default, so `print()` output is shown immediately in the integrated terminal. Debug requires the Microsoft Python and Python Debugger extensions.
 
+When you click `Run` or `Debug`, a centered configuration panel opens in the editor before execution:
+
+1. Additional pytest arguments, such as `-s --maxfail=1 --tb=short`
+2. Environment variables in `KEY=VALUE; KEY2=VALUE2` format
+
+The settings below provide the default values shown in those dialogs. You can change them for a single run without editing `settings.json`.
+
+After a run, the entered values are saved as the most recent configuration for the current workspace and restored the next time a test is launched.
+
 ## Supported declarations
 
 - Any Python file, regardless of its filename or directory
@@ -20,7 +29,8 @@ It does not call VS Code's test discovery API and does not scan the repository b
 ## Settings
 
 - `pytestQuickRun.pythonPath`: Python executable. Empty uses the configured Python extension interpreter, then `python3`.
-- `pytestQuickRun.pytestArgs`: extra pytest arguments. Defaults to `["-s"]` so `print()` output is not captured.
+- `pytestQuickRun.pytestArgs`: additional pytest arguments. Defaults to `["-s"]` so `print()` output is not captured. For example, `["-x", "--tb=short"]`.
+- `pytestQuickRun.environmentVariables`: environment variables passed to both run and debug, for example `{ "APP_ENV": "test", "DJANGO_SETTINGS_MODULE": "config.settings" }`.
 - `pytestQuickRun.cwd`: pytest working directory. Empty uses the workspace root.
 
 The command palette also provides **Pytest Quick Run: Run Test at Cursor**.
