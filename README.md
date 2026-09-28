@@ -62,10 +62,10 @@ npm install
 npm run package:vsix
 ```
 
-Then install `pytest-quick-run-0.0.1.vsix` from the VS Code Extensions view using **Install from VSIX...**, or run:
+Then install `pytest-quick-run-0.0.2.vsix` from the VS Code Extensions view using **Install from VSIX...**, or run:
 
 ```bash
-code --install-extension pytest-quick-run-0.0.1.vsix
+code --install-extension pytest-quick-run-0.0.2.vsix
 ```
 
 ## Publish to the Marketplace
