@@ -88,7 +88,7 @@ async function runAtCursor(
   const workspaceFolder = vscode.workspace.getWorkspaceFolder(document.uri);
   const root = workspaceFolder?.uri.fsPath ?? path.dirname(document.uri.fsPath);
   const config = vscode.workspace.getConfiguration("pytestQuickRun", document.uri);
-  const pythonPath = resolvePythonPath(config, document.uri);
+  const pythonPath = await resolvePythonPath(config, document.uri);
   const configuredCwd = config.get<string>("cwd", "").trim();
   const cwd = configuredCwd ? resolveWorkspacePath(configuredCwd, root) : root;
   const options = await promptRunOptions(context, config, debug);
@@ -107,7 +107,7 @@ async function runAtCursor(
 
   const terminal = getTerminal(cwd, environmentVariables);
   terminal.show(true);
-  terminal.sendText([quoteShell(pythonPath), "-m", "pytest", ...args.map(quoteShell), quoteShell(nodeId)].join(" "));
+  executePytestInTerminal(terminal, pythonPath, args, nodeId);
 }
 
 let activeRunOptionsPanel: vscode.WebviewPanel | undefined;
@@ -373,16 +373,52 @@ async function debugTest(
   }
 }
 
-function resolvePythonPath(
+async function resolvePythonPath(
   config: vscode.WorkspaceConfiguration,
   documentUri: vscode.Uri
-): string {
+): Promise<string> {
   const configuredPython = config.get<string>("pythonPath", "").trim();
+  if (configuredPython) {
+    return configuredPython;
+  }
+
+  const activePython = await getActivePythonPath(documentUri);
+  if (activePython) {
+    return activePython;
+  }
+
   const pythonConfig = vscode.workspace.getConfiguration("python", documentUri);
-  return configuredPython
-    || pythonConfig.get<string>("defaultInterpreterPath", "").trim()
+  return pythonConfig.get<string>("defaultInterpreterPath", "").trim()
     || pythonConfig.get<string>("pythonPath", "").trim()
     || "python3";
+}
+
+async function getActivePythonPath(documentUri: vscode.Uri): Promise<string | undefined> {
+  try {
+    const pythonExtension = vscode.extensions.getExtension<any>("ms-python.python");
+    if (!pythonExtension) {
+      return undefined;
+    }
+
+    const pythonApi = await pythonExtension.activate();
+    const executionDetails = pythonApi?.settings?.getExecutionDetails?.(documentUri);
+    const executionCommand = executionDetails?.execCommand;
+    if (Array.isArray(executionCommand) && typeof executionCommand[0] === "string") {
+      return executionCommand[0].trim() || undefined;
+    }
+
+    const activeEnvironment = pythonApi?.environments?.getActiveEnvironmentPath?.(documentUri);
+    const activeEnvironmentDetails = activeEnvironment
+      ? pythonApi?.environments?.getEnvironment?.(activeEnvironment)
+      : undefined;
+    const activeExecutable = activeEnvironmentDetails?.executable?.uri?.fsPath;
+    if (typeof activeExecutable === "string" && activeExecutable.trim()) {
+      return activeExecutable.trim();
+    }
+  } catch {
+    // The extension must still work when the Python extension is unavailable or its API changes.
+  }
+  return undefined;
 }
 
 let pytestTerminal: vscode.Terminal | undefined;
@@ -407,6 +443,53 @@ function getTerminal(cwd: string, environmentVariables: Record<string, string>):
     pytestTerminalEnvironmentKey = environmentKey;
   }
   return pytestTerminal;
+}
+
+function executePytestInTerminal(
+  terminal: vscode.Terminal,
+  pythonPath: string,
+  args: string[],
+  nodeId: string
+): void {
+  const commandLine = [pythonPath, "-m", "pytest", ...args, nodeId].map(quoteShell).join(" ");
+  let executed = false;
+  let changeListener: vscode.Disposable | undefined;
+
+  const execute = (): boolean => {
+    if (executed || terminal.exitStatus) {
+      return executed;
+    }
+    const shellIntegration = terminal.shellIntegration;
+    if (!shellIntegration) {
+      return false;
+    }
+    executed = true;
+    changeListener?.dispose();
+    shellIntegration.executeCommand(commandLine);
+    return true;
+  };
+
+  if (execute()) {
+    return;
+  }
+
+  changeListener = vscode.window.onDidChangeTerminalShellIntegration?.(({ terminal: changedTerminal }) => {
+    if (changedTerminal === terminal) {
+      execute();
+    }
+  });
+
+  // Shell integration is unavailable in some shells. Give startup/activation time to finish,
+  // then retain the old sendText fallback for those terminals.
+  setTimeout(() => {
+    if (executed || terminal.exitStatus) {
+      changeListener?.dispose();
+      return;
+    }
+    changeListener?.dispose();
+    executed = true;
+    terminal.sendText(commandLine);
+  }, 3000);
 }
 
 function resolveWorkspacePath(value: string, workspaceRoot: string): string {

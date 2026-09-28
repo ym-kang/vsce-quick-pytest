@@ -46,7 +46,7 @@ Configure pytest arguments and environment variables in the centered editor pane
 
 ## Settings
 
-- `pytestQuickRun.pythonPath`: Python executable. Empty uses the configured Python extension interpreter, then `python3`.
+- `pytestQuickRun.pythonPath`: Python executable. Empty uses the selected Python extension interpreter, then the configured Python path or `python3`.
 - `pytestQuickRun.pytestArgs`: additional pytest arguments. Defaults to `["-s"]` so `print()` output is not captured. For example, `["-x", "--tb=short"]`.
 - `pytestQuickRun.environmentVariables`: environment variables passed to both run and debug, for example `{ "APP_ENV": "test", "DJANGO_SETTINGS_MODULE": "config.settings" }`.
 - `pytestQuickRun.cwd`: pytest working directory. Empty uses the workspace root.
